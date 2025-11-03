@@ -1,5 +1,7 @@
-# U2GB-Ejercicios-Pr-cticos-Colas
+# U2GB-Ejercicios-Practicos-Colas
 
+
+### Atencion a clientes
 ```
 package ejParcticosColas;
 
@@ -68,7 +70,7 @@ public class AtencionClientes {
 }
 ```
 
-
+### Comparando colas
 ```
 package ejParcticosColas;
 
@@ -139,7 +141,7 @@ public class ComparadorCola {
 }
 ```
 
-
+### Mini super
 ```
 package ejParcticosColas;
 
