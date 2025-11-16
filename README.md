@@ -11,19 +11,75 @@ package ejParcticosColas;
  * si se necesita. Se registran estadísticas como el número de clientes atendidos,
  * el tamaño máximo de la fila y el minuto en que se abre una cuarta caja.
  * 
-
  * @author  Diana Mabel Garcia Martinez
  *          1224100672
  *          diabegarciamtz@gmail.com
  *          02/11/25
  */
-import java.util.LinkedList;
-import java.util.Queue;
 import java.util.Random;
+
+// Implementación personalizada de una cola usando lista enlazada
+class Cola<T> {
+    private Nodo<T> frente;
+    private Nodo<T> fin;
+    private int tamaño;
+    
+    private static class Nodo<T> {
+        T dato;
+        Nodo<T> siguiente;
+        
+        Nodo(T dato) {
+            this.dato = dato;
+            this.siguiente = null;
+        }
+    }
+    
+    public Cola() {
+        this.frente = null;
+        this.fin = null;
+        this.tamaño = 0;
+    }
+    
+    public void add(T elemento) {
+        Nodo<T> nuevoNodo = new Nodo<>(elemento);
+        if (isEmpty()) {
+            frente = nuevoNodo;
+        } else {
+            fin.siguiente = nuevoNodo;
+        }
+        fin = nuevoNodo;
+        tamaño++;
+    }
+    
+    public T poll() {
+        if (isEmpty()) {
+            return null;
+        }
+        T dato = frente.dato;
+        frente = frente.siguiente;
+        if (frente == null) {
+            fin = null;
+        }
+        tamaño--;
+        return dato;
+    }
+    
+    public T peek() {
+        return isEmpty() ? null : frente.dato;
+    }
+    
+    public int size() {
+        return tamaño;
+    }
+    
+    public boolean isEmpty() {
+        return frente == null;
+    }
+}
 
 public class AtencionClientes {
     public static void main(String[] args) {
-        Queue<Integer> fila = new LinkedList<>();
+        Cola<Integer> fila = new Cola<>();
         Random random = new Random();
         int clientesAtendidos = 0;
         int maxFila = 0;
@@ -85,9 +141,6 @@ package ejParcticosColas;
  *          02/11/25
  */
 
-import java.util.LinkedList;
-import java.util.Queue;
-
 public class ComparadorCola {
 
     /**
@@ -97,15 +150,15 @@ public class ComparadorCola {
      * @param cola2 Segunda cola a comparar
      * @return true si ambas colas tienen los mismos elementos en el mismo orden, false en caso contrario
      */
-    public static boolean sonIguales(Queue<Integer> cola1, Queue<Integer> cola2) {
+    public static boolean sonIguales(Cola<Integer> cola1, Cola<Integer> cola2) {
         // Si las colas tienen diferente tamaño, no pueden ser iguales
         if (cola1.size() != cola2.size()) {
             return false;
         }
 
         // Se crean copias temporales para no modificar las colas originales
-        Queue<Integer> temp1 = new LinkedList<>(cola1);
-        Queue<Integer> temp2 = new LinkedList<>(cola2);
+        Cola<Integer> temp1 = copiarCola(cola1);
+        Cola<Integer> temp2 = copiarCola(cola2);
 
         // Se comparan elemento por elemento
         while (!temp1.isEmpty()) {
@@ -118,11 +171,31 @@ public class ComparadorCola {
         // Si se recorrieron completamente sin diferencias, son iguales
         return true;
     }
+    
+    // Método auxiliar para copiar una cola
+    private static Cola<Integer> copiarCola(Cola<Integer> original) {
+        Cola<Integer> copia = new Cola<>();
+        Cola<Integer> temp = new Cola<>();
+        
+        // Primero copiamos todos los elementos a una cola temporal
+        while (!original.isEmpty()) {
+            Integer elemento = original.poll();
+            temp.add(elemento);
+            copia.add(elemento);
+        }
+        
+        // Restauramos la cola original
+        while (!temp.isEmpty()) {
+            original.add(temp.poll());
+        }
+        
+        return copia;
+    }
 
     public static void main(String[] args) {
         // Se crean dos colas de enteros
-        Queue<Integer> colaA = new LinkedList<>();
-        Queue<Integer> colaB = new LinkedList<>();
+        Cola<Integer> colaA = new Cola<>();
+        Cola<Integer> colaB = new Cola<>();
 
         // Se agregan elementos a ambas colas
         colaA.add(10);
@@ -134,9 +207,25 @@ public class ComparadorCola {
         colaB.add(30);
 
         // Se muestran las colas y el resultado de la comparación
-        System.out.println("Cola A: " + colaA);
-        System.out.println("Cola B: " + colaB);
+        System.out.println("Cola A: " + mostrarCola(colaA));
+        System.out.println("Cola B: " + mostrarCola(colaB));
         System.out.println("¿Son iguales? " + sonIguales(colaA, colaB));
+    }
+    
+    // Método auxiliar para mostrar el contenido de una cola sin modificarla
+    private static String mostrarCola(Cola<Integer> cola) {
+        StringBuilder sb = new StringBuilder("[");
+        Cola<Integer> temp = copiarCola(cola);
+        
+        while (!temp.isEmpty()) {
+            sb.append(temp.poll());
+            if (!temp.isEmpty()) {
+                sb.append(", ");
+            }
+        }
+        sb.append("]");
+        
+        return sb.toString();
     }
 }
 ```
@@ -156,21 +245,18 @@ package ejParcticosColas;
  *          02/11/25
  */
 
-import java.util.LinkedList;
-import java.util.Queue;
-
 public class Supermercado {
     public static void main(String[] args) {
         // Número total de carritos disponibles en el supermercado
         int carritos = 25;
 
         // Se crean tres colas para representar las cajas del supermercado
-        Queue<String> caja1 = new LinkedList<>();
-        Queue<String> caja2 = new LinkedList<>();
-        Queue<String> caja3 = new LinkedList<>();
+        Cola<String> caja1 = new Cola<>();
+        Cola<String> caja2 = new Cola<>();
+        Cola<String> caja3 = new Cola<>();
 
         // Cola para clientes que no alcanzan carrito y deben esperar
-        Queue<String> esperaCarritos = new LinkedList<>();
+        Cola<String> esperaCarritos = new Cola<>();
 
         // Lista de clientes que llegan al supermercado
         String[] clientes = {"Ana", "Luis", "Maria", "Carlos", "Sofia"};
